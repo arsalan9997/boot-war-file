@@ -1,42 +1,39 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "bootjsp-app"
-        DOCKER_IMAGE = "bootjsp-app:latest"
-        GIT_REPO = "https://github.com/arsalan9997/boot-war-file.git"
-    }
-
     stages {
-
-        stage('Clone from GitHub') {
+        stage('Clone Repo') {
             steps {
-                echo "📥 Cloning repository..."
-                git branch: 'master', url: "${GIT_REPO}"
-            }
-        }
-
-        stage('Verify WAR File') {
-            steps {
-                echo "🔍 Checking WAR file..."
-                sh 'ls -l BootJSP.war || (echo "BootJSP.war file not found!" && exit 1)'
+                git branch: 'master', url: 'https://github.com/arsalan9997/boot-war-file.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "🐳 Building Docker image..."
-                sh 'docker build -t $DOCKER_IMAGE .'
+                script {
+                    // ✅ Create Dockerfile dynamically
+                    writeFile file: 'Dockerfile', text: '''
+FROM eclipse-temurin:21-jdk
+COPY BootJSP.war app.war
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.war"]
+'''
+
+                    // ✅ Build Docker image
+                    sh 'docker build -t bootjsp-app:latest .'
+                }
             }
         }
 
-        stage('Deploy Docker Container') {
+        stage('Run Docker Container') {
             steps {
-                echo "🚀 Deploying container..."
-                sh '''
-                docker rm -f $APP_NAME || true
-                docker run -d --name $APP_NAME -p 8080:8080 $DOCKER_IMAGE
-                '''
+                script {
+                    // Stop old container if running
+                    sh 'docker rm -f bootjsp-app || true'
+                    
+                    // Run new container on port 9090
+                    sh 'docker run -d --name bootjsp-app -p 9090:8080 bootjsp-app:latest'
+                }
             }
         }
     }
