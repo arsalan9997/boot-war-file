@@ -12,7 +12,7 @@ pipeline {
         stage('Clone from GitHub') {
             steps {
                 echo "📥 Cloning repository..."
-                git branch: 'main', url: "${GIT_REPO}"
+                git branch: 'master', url: "${GIT_REPO}"
             }
         }
 
