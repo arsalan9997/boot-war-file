@@ -32,7 +32,7 @@ ENTRYPOINT ["java", "-jar", "app.war"]
                     sh 'docker rm -f bootjsp-app || true'
                     
                     // Run new container on port 9090
-                    sh 'docker run -d --name bootjsp-app -p 8081:8080 bootjsp-app:latest'
+                    sh 'docker run -d --name bootjsp-app -p 8080:8080 bootjsp-app:latest'
                 }
             }
         }
