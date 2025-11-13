@@ -24,11 +24,19 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                echo "🐳 Building Docker image..."
-                sh 'docker build -t $DOCKER_IMAGE .'
-            }
+    steps {
+        script {
+            writeFile file: 'Dockerfile', text: '''
+FROM eclipse-temurin:21-jdk
+COPY target/BootJSP.war app.war
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.war"]
+'''
+            sh 'docker build -t bootjsp-app:latest .'
         }
+    }
+}
+
 
         stage('Deploy Docker Container') {
             steps {
