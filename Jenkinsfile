@@ -35,7 +35,7 @@ pipeline {
                 echo "🚀 Deploying container..."
                 sh '''
                 docker rm -f $APP_NAME || true
-                docker run -d --name $APP_NAME -p 8080:8080 $DOCKER_IMAGE
+                docker run -d --name $APP_NAME -p 9090:8080 $DOCKER_IMAGE
                 '''
             }
         }
